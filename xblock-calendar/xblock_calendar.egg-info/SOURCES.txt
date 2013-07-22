@@ -1,7 +1,0 @@
-calendar.py
-xblock_calendar.egg-info/PKG-INFO
-xblock_calendar.egg-info/SOURCES.txt
-xblock_calendar.egg-info/dependency_links.txt
-xblock_calendar.egg-info/entry_points.txt
-xblock_calendar.egg-info/requires.txt
-xblock_calendar.egg-info/top_level.txt

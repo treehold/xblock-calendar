@@ -1,3 +1,0 @@
-[xblock.v1]
-calendar = calendar:CalendarBlock
-
