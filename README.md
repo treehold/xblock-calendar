@@ -1,2 +1,2 @@
-playground
+xblock-calendar
 ==========
