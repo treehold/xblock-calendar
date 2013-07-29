@@ -121,7 +121,7 @@ class CalendarBlock(XBlock):
 
 	blarg = TemplateGenerator()
 	blarg.generate_report()
-        html_str = pkg_resources.resource_string(__name__, "templates/calendar02.html")
+        html_str = pkg_resources.resource_string(__name__, "static/html/calendar02.html")
 
         return Fragment(unicode(html_str))
 
