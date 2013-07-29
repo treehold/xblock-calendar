@@ -19,8 +19,8 @@ class Authentication(object):
     def __init__(self):
 
         FLOW = OAuth2WebServerFlow(
-            client_id='68948793155.apps.googleusercontent.com',
-            client_secret='qWryJ7e5k-GvFAHv1sT8ZcqG',
+            client_id='183834599317.apps.googleusercontent.com',
+            client_secret='F9ek5BElDqYCsyZSQNgQBMVU',
             scope='https://www.googleapis.com/auth/calendar.readonly',
             user_agent='xblock-calendar/0.2')
 
