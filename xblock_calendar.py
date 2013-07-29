@@ -1,5 +1,6 @@
 import httplib2
 import datetime
+import os
 import pkg_resources
 from jinja2 import Environment, PackageLoader
 from collections import namedtuple
@@ -50,8 +51,8 @@ class Formatter(object):
         formatted_events = []
         Event = namedtuple('event', 'start summary')
 
-        json = self.service.events().list(calendarId='xblockcalendar@gmail.com').execute()
-        raw_events = json['items']
+        data = self.service.events().list(calendarId='xblockcalendar@gmail.com').execute()
+        raw_events = data['items']
 
         for i in range(len(raw_events)):
             year, month, day = unicode.encode(raw_events[i]['start']['dateTime'])[:10].split('-')
@@ -59,7 +60,7 @@ class Formatter(object):
                                           raw_events[i]['summary']))
         return formatted_events
 
-TEMPLATE_LOADER = PackageLoader('xblock_calendar')
+TEMPLATE_LOADER = PackageLoader('xblock_calendar', 'static')
 TEMPLATE_ENV = Environment(loader=TEMPLATE_LOADER,
                            lstrip_blocks=True,
                            trim_blocks=True)
@@ -68,13 +69,13 @@ class TemplateGenerator(object):
     """
     Reporter that uses a template to generate the report.
     """
-    TEMPLATE_NAME = 'calendar_template.html'
+    TEMPLATE_NAME = 'html/calendar_template.html'
 
     def generate_report(self):
         """
         See base class.
         """
-        html_file_path = 'templates/calendar02.html'
+        html_file_path = 'static/html/calendar02.html'
         html_file = open(html_file_path, 'w')
 
         if self.TEMPLATE_NAME is not None:
@@ -106,8 +107,6 @@ class TemplateGenerator(object):
             events['Days'][events['Days'].keys()[event.start.weekday()]].append(event)
         return events
 
-blarg = TemplateGenerator()
-blarg.generate_report()
 
 class CalendarBlock(XBlock):
     """
@@ -120,6 +119,8 @@ class CalendarBlock(XBlock):
 
     def student_view(self, context):
 
+	blarg = TemplateGenerator()
+	blarg.generate_report()
         html_str = pkg_resources.resource_string(__name__, "templates/calendar02.html")
 
         return Fragment(unicode(html_str))
@@ -133,7 +134,8 @@ class CalendarBlock(XBlock):
             ("Calendar",
             """\
                 <vertical>
-                    <calendar/>
+                    <Calendar/>
                 </vertical>
             """)
         ]
+

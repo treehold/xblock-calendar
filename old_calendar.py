@@ -14,20 +14,20 @@ class CalendarBlock(XBlock):
 
     def student_view(self, context):
 
-        html_str = pkg_resources.resource_string(__name__, "templates/calendar02.html")
+        html_str = pkg_resources.resource_string(__name__, "static/html/calendar02.html")
 
         return Fragment(unicode(html_str))
 
-    @staticmethod
-    def workbench_scenario():
-        """
-        A canned scenario for display in the workbench.
-        """
-        return [
-            ("Calendar",
-            """\
-                <vertical>
-                    <calendar/>
-                </vertical>
-            """)
-        ]
+#    @staticmethod
+#    def workbench_scenario():
+#        """
+#        A canned scenario for display in the workbench.
+#        """
+#        return [
+#            ("Calendar",
+#            """\
+#                <vertical>
+#                    <easgasgasgasghad />
+#                </vertical>
+#            """)
+#        ]
