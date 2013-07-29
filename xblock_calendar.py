@@ -42,9 +42,10 @@ class Authentication(object):
 class Formatter(object):
     """
     """
-    def __init__(self, authenticator):
+    def __init__(self, authenticator, email):
         self.service = authenticator.service
-
+	self.email = email
+	
     def format_events(self):
         """
         """
@@ -70,6 +71,9 @@ class TemplateGenerator(object):
     Reporter that uses a template to generate the report.
     """
     TEMPLATE_NAME = 'html/calendar_template.html'
+    
+    def __init__(self, email):
+    	self.email = email
 
     def generate_report(self):
         """
@@ -95,7 +99,7 @@ class TemplateGenerator(object):
 
         """
         auth = Authentication()
-        formatted = Formatter(auth).format_events()
+        formatted = Formatter(auth, self.email).format_events()
         events = {'Days': {'Monday': [],
                   'Tuesday': [],
                   'Wednesday': [],
@@ -119,7 +123,7 @@ class CalendarBlock(XBlock):
 
     def student_view(self, context):
 
-	blarg = TemplateGenerator()
+	blarg = TemplateGenerator(self.email)
 	blarg.generate_report()
         html_str = pkg_resources.resource_string(__name__, "static/html/calendar02.html")
 
@@ -134,7 +138,7 @@ class CalendarBlock(XBlock):
             ("Calendar",
             """\
                 <vertical>
-                    <Calendar/>
+                    <Calendar email="calendarxblock@gmail.com />
                     <Thumbs />
                 </vertical>
             """)
