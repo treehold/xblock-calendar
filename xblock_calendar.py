@@ -134,8 +134,8 @@ class CalendarBlock(XBlock):
             ("Calendar",
             """\
                 <vertical>
-                    <Balendar/>
-                    <thumbs />
+                    <Calendar/>
+                    <Thumbs />
                 </vertical>
             """)
         ]
