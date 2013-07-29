@@ -138,7 +138,7 @@ class CalendarBlock(XBlock):
             ("Calendar",
             """\
                 <vertical>
-                    <Calendar email="calendarxblock@gmail.com />
+                    <Calendar email="calendarxblock@gmail.com" />
                     <Thumbs />
                 </vertical>
             """)
