@@ -52,7 +52,7 @@ class Formatter(object):
         formatted_events = []
         Event = namedtuple('event', 'start summary')
 
-        data = self.service.events().list(calendarId='xblockcalendar@gmail.com').execute()
+        data = self.service.events().list(calendarId=self.email).execute()
         raw_events = data['items']
 
         for i in range(len(raw_events)):
