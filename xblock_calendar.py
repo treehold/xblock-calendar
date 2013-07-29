@@ -75,7 +75,7 @@ class TemplateGenerator(object):
         """
         See base class.
         """
-        html_file_path = 'edx-platform/xblock-calendar/static/html/calendar02.html'
+        html_file_path = '.virtualenvs/edx-platform/src/xblock-calendar/templates/calendar02.html'
         html_file = open(html_file_path, 'w')
 
         if self.TEMPLATE_NAME is not None:
