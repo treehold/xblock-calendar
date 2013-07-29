@@ -125,17 +125,17 @@ class CalendarBlock(XBlock):
 
         return Fragment(unicode(html_str))
 
-    @staticmethod
-    def workbench_scenario():
-        """
-        A canned scenario for display in the workbench.
-        """
-        return [
-            ("Calendar",
-            """\
-                <vertical>
-                    <Calendar/>
-                </vertical>
-            """)
-        ]
+    #@staticmethod
+    #def workbench_scenario():
+    #    """
+    #    A canned scenario for display in the workbench.
+    #    """
+    #    return [
+    #        ("Calendar",
+    #        """\
+    #            <vertical>
+    #                <Calendar/>
+    #            </vertical>
+    #        """)
+    #    ]
 
