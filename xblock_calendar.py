@@ -126,7 +126,7 @@ class CalendarBlock(XBlock):
         return Fragment(unicode(html_str))
 
     @staticmethod
-    def workbench_scenario():
+    def workbench_scenarios():
         """
         A canned scenario for display in the workbench.
         """
