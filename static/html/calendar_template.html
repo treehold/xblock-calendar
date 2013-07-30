@@ -11,12 +11,12 @@
                 <th>Sat.27</th>
                 <th>Sun.28</th>
             </tr>
-            {% if Days %}
+            {% if Weekdays %}
                 <tr>
-                    {% for day in Days.keys() %}
+                    {% for day in Weekdays.keys() %}
                     <td>
                         <ul>
-                            {% for event in Days[day] %}
+                            {% for event in Weekdays[day] %}
                                 <li> {{ event.summary }} </li>    
                             {% endfor %}            
                         </ul>

@@ -1,6 +1,5 @@
 import httplib2
 import datetime
-import os
 import pkg_resources
 from jinja2 import Environment, PackageLoader
 from collections import namedtuple
@@ -15,6 +14,7 @@ from xblock.fragment import Fragment
 
 class Authentication(object):
     """
+    Handles the creation of access tokens for the Google Calendar API.
     """
     def __init__(self):
 
@@ -22,7 +22,8 @@ class Authentication(object):
             client_id='183834599317.apps.googleusercontent.com',
             client_secret='F9ek5BElDqYCsyZSQNgQBMVU',
             scope='https://www.googleapis.com/auth/calendar.readonly',
-            user_agent='xblock-calendar/0.2')
+            user_agent='xblock-calendar/0.2',
+            access_type='offline')
 
         storage = Storage('calendar.dat')
         credentials = storage.get()
@@ -41,11 +42,12 @@ class Authentication(object):
 
 class Formatter(object):
     """
+    Converts the json obtained through the Google Calendar API into
     """
     def __init__(self, authenticator, email):
         self.service = authenticator.service
-	self.email = email
-	
+        self.email = email
+
     def format_events(self):
         """
         """
@@ -61,23 +63,25 @@ class Formatter(object):
                                           raw_events[i]['summary']))
         return formatted_events
 
+
 TEMPLATE_LOADER = PackageLoader('xblock_calendar', 'static')
 TEMPLATE_ENV = Environment(loader=TEMPLATE_LOADER,
                            lstrip_blocks=True,
                            trim_blocks=True)
 
-class TemplateGenerator(object):
+
+class Middleman(object):
     """
-    Reporter that uses a template to generate the report.
+    Handles communication between the code and the template.
     """
     TEMPLATE_NAME = 'html/calendar_template.html'
-    
-    def __init__(self, email):
-    	self.email = email
 
-    def generate_report(self):
+    def __init__(self, email):
+        self.email = email
+
+    def generate_html(self):
         """
-        See base class.
+        Populates the calendar template with the data obtained from the calendar corresponding to `self.email`.
         """
         html_file_path = '../.virtualenvs/edx-platform/src/xblock-calendar/static/html/calendar02.html'
         html_file = open(html_file_path, 'w')
@@ -90,31 +94,33 @@ class TemplateGenerator(object):
             # Render the template
             report = template.render(self._context())
 
-            # Write the report to the output file
+            # Write the events to the html file that will be displayed.
             # (encode to a byte string)
             html_file.write(report.encode('utf-8'))
 
     def _context(self):
         """
-
+        Returns a dictionary containing the information we want the template to read and display.
         """
         auth = Authentication()
-        formatted = Formatter(auth, self.email).format_events()
-        events = {'Days': {'Monday': [],
+        formatted_events = Formatter(auth, self.email).format_events()
+        events = {'Weekdays': {'Monday': [],
                   'Tuesday': [],
                   'Wednesday': [],
                   'Thursday': [],
                   'Friday': [],
                   'Saturday': [],
-                  'Sunday': []}}
-        for event in formatted:
-            events['Days'][events['Days'].keys()[event.start.weekday()]].append(event)
+                  'Sunday': []},
+                  'Dates': {}}
+        for event in formatted_events:
+            events['Weekdays'][events['Weekdays'].keys()[event.start.weekday()]].append(event)
+
         return events
 
 
 class CalendarBlock(XBlock):
     """
-    Calendar
+    An XBlock that pulls information from an existing Google Calendar and displays it in the workbench.
     """
 
     email = String(help="Email address of the google-compatible account whose calendar we wish to display",
@@ -122,9 +128,15 @@ class CalendarBlock(XBlock):
                    scope=Scope.settings)
 
     def student_view(self, context):
+        """
+        Create a fragment used to display the XBlock to a student.
+        `context` is a dictionary used to configure the display (unused)
 
-	blarg = TemplateGenerator(self.email)
-	blarg.generate_report()
+        Returns a `Fragment` object specifying the HTML, CSS, and JavaScript
+        """
+
+        middleman = Middleman(self.email)
+        middleman.generate_html()
         html_str = pkg_resources.resource_string(__name__, "static/html/calendar02.html")
 
         return Fragment(unicode(html_str))
@@ -136,11 +148,10 @@ class CalendarBlock(XBlock):
         """
         return [
             ("Calendar",
-            """\
-                <vertical>
-                    <Calendar email="xblockcalendar@gmail.com" />
-                    <Thumbs />
-                </vertical>
-            """)
+                """\
+                    <vertical>
+                        <Calendar email="xblockcalendar@gmail.com" />
+                        <Thumbs />
+                    </vertical>
+                """)
         ]
-
