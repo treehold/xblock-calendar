@@ -127,7 +127,7 @@ class CalendarBlock(XBlock):
                    default=None,
                    scope=Scope.settings)
 
-    def student_view(self, context):
+    def prudent_view(self, context):
         """
         Create a fragment used to display the XBlock to a student.
         `context` is a dictionary used to configure the display (unused)
