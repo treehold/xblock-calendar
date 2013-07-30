@@ -22,7 +22,8 @@ class Authentication(object):
             client_id='183834599317.apps.googleusercontent.com',
             client_secret='F9ek5BElDqYCsyZSQNgQBMVU',
             scope='https://www.googleapis.com/auth/calendar.readonly',
-            user_agent='xblock-calendar/0.2')
+            user_agent='xblock-calendar/0.2',
+            access_type='offline')
 
         storage = Storage('calendar.dat')
         credentials = storage.get()
