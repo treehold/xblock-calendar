@@ -64,7 +64,7 @@ class Formatter(object):
         return formatted_events
 
 
-TEMPLATE_LOADER = PackageLoader('xblock-calendar', 'static')
+TEMPLATE_LOADER = PackageLoader(__file__, 'static')
 TEMPLATE_ENV = Environment(loader=TEMPLATE_LOADER,
                            lstrip_blocks=True,
                            trim_blocks=True)
