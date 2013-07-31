@@ -86,7 +86,7 @@ class EventHandler(object):
         self.service = service
 
     @staticmethod
-    def format_event(self, event):
+    def format_event(event):
         """
         """
         try:
