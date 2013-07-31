@@ -149,10 +149,10 @@ class EventHandler(object):
 # auth = EventHandler('xblockcalendar@gmail.com')
 # print auth.service.events().list(calendarId=auth.email).execute()['items'][0]['start']
 
-# TEMPLATE_LOADER = PackageLoader('xblock_calendar', 'static')
-# TEMPLATE_ENV = Environment(loader=TEMPLATE_LOADER,
-#                            lstrip_blocks=True,
-#                            trim_blocks=True)
+TEMPLATE_LOADER = PackageLoader('xblock_calendar', 'static')
+TEMPLATE_ENV = Environment(loader=TEMPLATE_LOADER,
+                           lstrip_blocks=True,
+                           trim_blocks=True)
 
 
 class Middleman(object):
