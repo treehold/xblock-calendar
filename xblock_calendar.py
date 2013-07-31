@@ -85,26 +85,74 @@ class EventHandler(object):
                         http=http)
         self.service = service
 
+    @staticmethod
+    def format_event(self, event):
+        """
+        """
+        try:
+            year, month, day = unicode.encode(event['start']['dateTime'])[:10].split('-')
+        except:
+            year, month, day = unicode.encode(event['start']['date'])[:10].split('-')
+        return (datetime.date(int(year), int(month), int(day)), event['summary'])
+
+    @staticmethod
+    def is_this_week(self, pair):
+        """
+        `day` is an ordered pair whose first element is a datetime object and second element is a string.
+        Returns True iff `day` is within the current week.
+        A week starts on Monday and ends on Sunday.
+        """
+        # week_start is 12AM of the most recent Monday
+        now = datetime.datetime.now()
+        day = pair[0]
+        week_start = now-datetime.timedelta(days=now.weekday(), hours=now.hour, minutes=now.minute,
+                                            seconds=now.second, microseconds=now.microsecond)
+        if 0 < (day-week_start).days < 7:
+            return True
+        else:
+            return False
+
     def format_events(self):
         """
         """
         formatted_events = []
         Event = namedtuple('event', 'start summary')
-
         data = self.service.events().list(calendarId=self.email).execute()
         raw_events = data['items']
+        cooked_events = map(self.format_event, raw_events)
+        # relevant_events represents this week's events
+        relevant_events = filter(self.is_this_week, cooked_events)
 
-        for i in range(len(raw_events)):
-            year, month, day = unicode.encode(raw_events[i]['start']['dateTime'])[:10].split('-')
-            formatted_events.append(Event(datetime.date(int(year), int(month), int(day)),
-                                          raw_events[i]['summary']))
+        # for i in range(len(raw_events)):
+        #     year, month, day = unicode.encode(raw_events[i]['start']['dateTime'])[:10].split('-')
+        #     formatted_events.append(Event(datetime.date(int(year), int(month), int(day)),
+        #                                   raw_events[i]['summary']))
+
+        for event in relevant_events:
+            start, summary = event
+            formatted_events.append(Event(starta, summary))
+
+        # for event in raw_events:
+        #     try:
+        #         year, month, day = unicode.encode(event['start']['dateTime'])[:10].split('-')
+        #         event = datetime.datetime(year, month, day)
+        #     except:
+        #         year, month, day = unicode.encode(event['start']['dateTime'])[:10].split('-')
+        #         event = datetime.datetime(year, month, day)
+
+        #     formatted_events.append(Event(datetime.date(int(year), int(month), int(day)),
+        #                                   event['summary']))
+
         return formatted_events
 
+# create_access_token()
+# auth = EventHandler('xblockcalendar@gmail.com')
+# print auth.service.events().list(calendarId=auth.email).execute()['items'][0]['start']
 
-TEMPLATE_LOADER = PackageLoader('xblock_calendar', 'static')
-TEMPLATE_ENV = Environment(loader=TEMPLATE_LOADER,
-                           lstrip_blocks=True,
-                           trim_blocks=True)
+# TEMPLATE_LOADER = PackageLoader('xblock_calendar', 'static')
+# TEMPLATE_ENV = Environment(loader=TEMPLATE_LOADER,
+#                            lstrip_blocks=True,
+#                            trim_blocks=True)
 
 
 class Middleman(object):
