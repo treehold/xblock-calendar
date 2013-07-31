@@ -12,41 +12,78 @@ from xblock.core import XBlock, Scope, String
 from xblock.fragment import Fragment
 
 
-class Authentication(object):
+def create_access_token(self):
     """
-    Handles the creation of access tokens for the Google Calendar API.
+    Creates an access token for the Google Calendar API
     """
-    def __init__(self):
 
-        FLOW = OAuth2WebServerFlow(
-            client_id='183834599317.apps.googleusercontent.com',
-            client_secret='F9ek5BElDqYCsyZSQNgQBMVU',
-            scope='https://www.googleapis.com/auth/calendar.readonly',
-            user_agent='xblock-calendar/0.2',
-            access_type='offline')
+    FLOW = OAuth2WebServerFlow(
+        client_id='183834599317.apps.googleusercontent.com',
+        client_secret='F9ek5BElDqYCsyZSQNgQBMVU',
+        scope='https://www.googleapis.com/auth/calendar.readonly',
+        user_agent='xblock-calendar/0.2',
+        access_type='offline')
 
-        storage = Storage('calendar.dat')
-        credentials = storage.get()
-        if credentials is None or credentials.invalid == True:
-            credentials = run(FLOW, storage)
+    storage = Storage('calendar.dat')
+    credentials = storage.get()
+    if credentials is None or credentials.invalid == True:
+        credentials = run(FLOW, storage)
 
-        http = httplib2.Http()
-        http = credentials.authorize(http)
+# class Authentication(object):
+#     """
+#     Handles the creation of access tokens for the Google Calendar API.
+#     """
+#     def __init__(self):
 
-        service = build(serviceName='calendar',
-                        version='v3',
-                        http=http)
+#         FLOW = OAuth2WebServerFlow(
+#             client_id='183834599317.apps.googleusercontent.com',
+#             client_secret='F9ek5BElDqYCsyZSQNgQBMVU',
+#             scope='https://www.googleapis.com/auth/calendar.readonly',
+#             user_agent='xblock-calendar/0.2',
+#             access_type='offline')
 
-        self.service = service
+#         storage = Storage('calendar.dat')
+#         credentials = storage.get()
+#         if credentials is None or credentials.invalid == True:
+#             credentials = run(FLOW, storage)
+
+        #http = httplib2.Http()
+        #http = credentials.authorize(http)
+
+        #service = build(serviceName='calendar',
+        #                version='v3',
+        #                http=http)
+
+        #self.service = service
+
+# storage = Storage('calendar.dat')
+# credentials = storage.get()
+# print storage.get()
+# http = httplib2.Http()
+# http = credentials.authorize(http)
+
+# service = build(serviceName='calendar',
+#                 version='v3',
+#                 http=http)
+# print service.events().list(calendarId='xblockcalendar@gmail.com').execute()
+# print 'worked'
 
 
-class Formatter(object):
+class EventHandler(object):
     """
     Converts the json obtained through the Google Calendar API into
     """
-    def __init__(self, authenticator, email):
-        self.service = authenticator.service
+    def __init__(self, email):
         self.email = email
+
+        storage = Storage('calendar.dat')
+        credentials = storage.get()
+        http = httplib2.Http()
+        http = credentials.authorize(http)
+        service = build(serviceName='calendar',
+                        version='v3',
+                        http=http)
+        self.service = service
 
     def format_events(self):
         """
@@ -102,8 +139,7 @@ class Middleman(object):
         """
         Returns a dictionary containing the information we want the template to read and display.
         """
-        auth = Authentication()
-        formatted_events = Formatter(auth, self.email).format_events()
+        formatted_events = EventHandler(self.email).format_events()
         events = {'Weekdays': {'Monday': [],
                   'Tuesday': [],
                   'Wednesday': [],
@@ -127,19 +163,30 @@ class CalendarBlock(XBlock):
                    default=None,
                    scope=Scope.settings)
 
-    def prudent_view(self, context):
+    def student_view(self, context):
         """
         Create a fragment used to display the XBlock to a student.
         `context` is a dictionary used to configure the display (unused)
 
         Returns a `Fragment` object specifying the HTML, CSS, and JavaScript
         """
-
+        create_access_token()
         middleman = Middleman(self.email)
         middleman.generate_html()
         html_str = pkg_resources.resource_string(__name__, "static/html/calendar02.html")
 
         return Fragment(unicode(html_str))
+
+    def instructor_view(self, context):
+        """
+        - Creates a fragment used to display the XBlock to an instructor.
+          `context` is a dictionary used to configure the display (unused)
+        - Creates a Google API access token to the instructor's Google Calendar.
+        Returns a `Fragment` object specifying the HTML, CSS, and JavaScript
+        """
+
+        '[TODO]'
+        create_access_token()
 
     @staticmethod
     def workbench_scenarios():
