@@ -96,7 +96,7 @@ class EventHandler(object):
         return (datetime.date(int(year), int(month), int(day)), event['summary'])
 
     @staticmethod
-    def is_this_week(self, pair):
+    def is_this_week(pair):
         """
         `day` is an ordered pair whose first element is a datetime object and second element is a string.
         Returns True iff `day` is within the current week.
