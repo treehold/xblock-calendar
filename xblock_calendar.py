@@ -12,7 +12,7 @@ from xblock.core import XBlock, Scope, String
 from xblock.fragment import Fragment
 
 
-def create_access_token(self):
+def create_access_token():
     """
     Creates an access token for the Google Calendar API
     """
