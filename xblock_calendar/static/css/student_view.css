@@ -1,0 +1,56 @@
+#today 
+{   
+    border-left:2px rgb(181, 42, 103);
+    border-right:2px rgb(181, 42, 103);
+}
+
+#Date
+{
+    font-family: arial,"lucida grande",verdana,helvetica,sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+}
+
+a {
+    cursor :pointer;
+}
+
+.calendarblock {
+    margin:100px;
+    width:85%
+}
+
+table
+{
+    border-collapse: collapse;
+    /*margin:100px;*/
+    width: 75%;
+}
+table, td, th
+{
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.8;
+    font-family: arial,"lucida grande",verdana,helvetica,sans-serif;
+    text-align: left;
+}
+th
+{
+    background: rgb(18, 111, 154);
+    color: white;
+    /* border-bottom: 1px solid rgb(181,42,103);
+    /* border-width: 1px 0pt;
+    /*background: none repeat scroll 0% 0% rgb(238,238,238);*/
+}
+ul, th, td
+{
+    list-style-type: none;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+img
+{
+    width:16px;
+    height:auto;
+}

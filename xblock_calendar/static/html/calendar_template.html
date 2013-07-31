@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <body>
+        <div class="calendarblock" align="center">
+            <a id="previous-week">
+                <img src="https://www.edx.org/sites/all/themes/boron/images/left-arrow.png">
+            </a>
+            <span id="today">{{Today}}</span>
+            <a id="next-week">
+                <img src="https://www.edx.org/sites/all/themes/boron/images/right-arrow.png">
+            </a>
+            <table border="2" cellspacing=0 summary="Upcoming class events for the week" class="calendarTable" >
+                {% if Dates %}
+                <tr id="date-row">
+                    {% for day in Order %}
+                        {% if day %}
+                            <th class="thisweek" id="today"> {{ Dates[day] }} </th>
+                        {% elif day %}
+                            <th class="thisweek" {{ Dates[day] }}> </th>
+                        {% endif %}
+                    {% endfor %}
+                </tr>
+                {% endif %}
+                {% if Events %}
+                    <tr class="happenings">
+                        {% for day in Order %}
+                        <td>
+                            <ul class="evnt-lst">
+                                {% for event in Events[day] %}
+                                    <li> {{ event }} </li>
+                                {% endfor %}            
+                            </ul>
+                        </td>
+                        {% endfor %}
+                    </tr>
+                {% endif %}
+            </table>
+        </div>
+    </body>
+</html>

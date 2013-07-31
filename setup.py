@@ -7,7 +7,7 @@ setup(
     install_requires=['XBlock'],
     entry_points={
         'xblock.v1': [
-            'calendar = xblock_calendar:CalendarBlock',
+            'calendar = xblock_calendar.xblock_calendar:CalendarBlock',
         ]
     }
 )
