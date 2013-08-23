@@ -79,6 +79,20 @@ class EventHandler(object):
         return date - datetime.timedelta(days=date.weekday(), hours=date.hour, minutes=date.minute,
                                          seconds=date.second, microseconds=date.microsecond)
 
+    @staticmethod
+    def week_count(now, event_start, recurrence):
+        if (now-event_start).days/7 >= int(recurrence['COUNT']):
+            return False
+        else:
+            return True
+
+    @staticmethod
+    def month_count(now, event_start, recurrence):
+        if (now - event_start).days/28 >= int(recurrence['COUNT']):
+            return False
+        else:
+            return True
+
     def is_this_week(self, formatted_event):
         """
         `formatted_event` is an ordered triple whose elements encode a calendar event's
@@ -89,38 +103,51 @@ class EventHandler(object):
         # week_start is 12AM of the most recent Monday
         Event = namedtuple('event', 'start summary')
         now = today() + datetime.timedelta(days=7*self.offset)
-        monday_of = self.monday_of(now)
+        monday = self.monday_of(now)
         event_start = formatted_event[0]
         recurrence = formatted_event[2]
-        if recurrence is None:
-            if 0 < (event_start-monday_of).days < 7:
+
+        # maps recurrence types to the functions that process them
+        count_dictionary = {'MONTHLY': self.month_count, 'WEEKLY': self.week_count}
+
+        # True for non-recurring events happening this week
+        if recurrence is None and self.monday_of(event_start) == monday:
+            if self.monday_of(event_start) == monday:
                 return True
             else:
                 return False
-        elif recurrence is not None and not self.monday_of(event_start) > monday_of:
+
+        # start logic to return True for recurring events whose initial
+        # start date is this week or earlier
+        elif recurrence is not None and not self.monday_of(event_start) > monday:
             recurrence = self.parse_recurrence(recurrence)
-            if recurrence['FREQ'] == 'DAILY':
-                monday = self.monday_of(event_start)
+
+            # handles events that should stop appearing in calendar
+            # after a certain date
+            if 'UNTIL' in recurrence and monday > self.monday_of(self.parse_date(recurrence['UNTIL'])):
+                return False
+
+            # handles events that are only supposed to happen a
+            # certain number of times
+            if 'COUNT' in recurrence:
+                return count_dictionary[recurrence['FREQ']](now, event_start, recurrence)
+
+            # adds a copy of the event for each day of the week
+            # and returns false to avoid getting a repeated event
+            elif recurrence['FREQ'] == 'DAILY':
+                event_monday = self.monday_of(event_start)
                 for i in range(7):
-                    event = Event(monday + datetime.timedelta(days=i), formatted_event[1])
+                    event = Event(event_monday + datetime.timedelta(days=i), formatted_event[1])
                     self.formatted_events.append(event)
                 return False
-            if recurrence['FREQ'] == 'WEEKLY':
-                if 'UNTIL' in recurrence:
-                    until = self.parse_date(recurrence['UNTIL'])
-                    if event_start < now < until:
-                        return True
-                    else:
-                        return False
-                elif 'COUNT' in recurrence:
-                    if (now-event_start).days/7 >= int(recurrence['COUNT']):
-                        return False
-                    else:
-                        return True
-                elif 'BYDAY' in recurrence:
+
+            # adds a copy of the event for each day of the week
+            # on which it happens and then returns false to avoid repeats
+            elif recurrence['FREQ'] == 'WEEKLY':
+                if 'BYDAY' in recurrence:
                     all_days = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
                     relevant_days = recurrence['BYDAY'].split(',')
-                    monday = self.monday_of(event_start)
+                    event_monday = self.monday_of(event_start)
                     for i in range(7):
                         if all_days[i] in relevant_days:
                             event = Event(monday + datetime.timedelta(days=i), formatted_event[1])
@@ -129,24 +156,13 @@ class EventHandler(object):
                 else:
                     return True
 
+            # returns True if the number of weeks since the event happened is
+            # a multiple of four.
             elif recurrence['FREQ'] == 'MONTHLY':
-                if 'UNTIL' in recurrence:
-                    if now > self.parse_date(recurrence['UNTIL']):
-                        return False
-                    else:
-                        return True
-                elif 'COUNT' in recurrence:
-                    if (now - event_start).days/28 >= int(recurrence['COUNT']):
-                        return False
-                    else:
-                        return True
-                elif (self.monday_of(now) - self.monday_of(event_start)).days % 28 == 0:
+                if (monday - self.monday_of(event_start)).days % 28 == 0:
                     return True
-            else:
-                #event repeats forever
-                return True
-        else:
-            return False
+                else:
+                    return False
 
     def format_events(self):
         """
