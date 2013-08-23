@@ -299,8 +299,9 @@ class CalendarBlock(XBlock):
 
     @XBlock.query_handler
     def grant_access(self, response):
+        from pudb import set_trace; set_trace()
         """
-        `response` is a string containing the result of trying to obtaine an
+        `response` is a string containing the result of trying to obtain an
         authorization code to create an access token for the Google Calendar API.
         If `response` contains an authorization code, `grant_access` uses that code
         to obtain an access token and a refresh token from Google.
